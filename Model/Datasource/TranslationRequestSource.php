@@ -149,13 +149,7 @@ class TranslationRequestSource extends DataSource {
 		if(!isset($data['conditions'])) {
 			throw new CakeException("API requires a Translation Request.id.");
 		}
-		if(isset($data['conditions'][$Model->alias . ".id"])) {
-			$id = $data['conditions'][$Model->alias . ".id"];
-		}else if(isset($data['conditions']["id"])) {
-			$id = $data['conditions']["id"];
-		}else {
-			throw new CakeException("API requires a Translation Request.id.");
-		}
+		$id = $this->getModelId($Model, $data['conditions']);
 		$url = $this->config['vtsUrl'] . "translation_requests/" . $id . ".json";
     $res = json_decode($this->Http->get($url, array()), true);
     if (is_null($res) || empty($res)) {
@@ -200,6 +194,39 @@ class TranslationRequestSource extends DataSource {
 	    $Model->id = $res['vts']['translation_request']['id'];
 		}
 		return true;
+	}
+	
+	/**
+	 * Delete the TranslationRequest
+	 *
+	 * @param Model $Model The Model Object
+	 * @param array $conditions array of conditions
+	 * @return boolean
+	 * @access public
+	 * @author Johnathan Pulos
+	 */
+	public function delete(Model $Model, $conditions = null) {
+		
+		return true;
+	}
+	
+	/**
+	 * Get the Model.id based on the passed conditions
+	 *
+	 * @param Model $Model The Model Object
+	 * @param array $conditions an array of conditions
+	 * @return integer
+	 * @access private
+	 * @author Johnathan Pulos
+	 */
+	private function getModelId(Model $Model, $conditions) {
+		if(isset($conditions[$Model->alias . ".id"])) {
+			return $conditions[$Model->alias . ".id"];
+		}else if(isset($conditions["id"])) {
+			return $conditions["id"];
+		}else {
+			throw new CakeException("API requires a Translation Request.id.");
+		}
 	}
 	
 }
