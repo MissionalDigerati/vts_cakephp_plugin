@@ -193,7 +193,11 @@ class TranslationRequestSource extends DataSource {
 			 */
 	    $Model->id = $res['vts']['translation_request']['id'];
 		}
-		return true;
+		if($res['vts']['status'] == 'error') {
+			return false;
+		}else {
+			return true;
+		}
 	}
 	
 	/**
@@ -206,8 +210,18 @@ class TranslationRequestSource extends DataSource {
 	 * @author Johnathan Pulos
 	 */
 	public function delete(Model $Model, $conditions = null) {
-		
-		return true;
+		$id = $this->getModelId($Model, $conditions);
+		$url = $this->config['vtsUrl'] . "translation_requests/" . $id . ".json";
+		$json = $this->Http->post($url, array('id' => $id, '_method' => 'DELETE'));
+		$res = json_decode($json, true);
+    if (is_null($res)) {
+        throw new CakeException("The result came back empty.  Make sure you set the vtsUrl in your app/Config/database.php, and your video translator service is running.");
+    }
+		if($res['vts']['status'] == 'error') {
+			return false;
+		}else {
+			return true;
+		}
 	}
 	
 	/**
