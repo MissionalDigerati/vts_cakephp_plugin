@@ -42,4 +42,36 @@ class TranslationRequest extends VideoTranslatorServiceAppModel {
 	 * @access public
 	 */
 	public $useTable = false;
+	
+	/**
+	 * Define the schema of the Model
+	 *
+	 * @var array
+	 * @access protected
+	 */
+	protected $_schema = array(	'id' => 				array(
+																											'type' => 'integer', 
+																											'null' => false, 
+																											'key' => 'primary',
+																											'length' => 12
+																							),
+															'token' => 			array(
+																											'type' => 'string', 
+																											'null' => false, 
+																											'length' => 255
+																							),
+															'created' => 		array(
+																											'type' => 'datetime', 
+																											'null' => true
+																							),
+															'modified' => 	array(
+																											'type' => 'datetime', 
+																											'null' => true
+																							),
+															'expires_at' => array(
+																											'type' => 'datetime', 
+																											'null' => true
+																							),
+	    );
+
 }

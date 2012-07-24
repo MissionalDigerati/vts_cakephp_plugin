@@ -48,7 +48,7 @@ class TranslationRequestSource extends DataSource {
 	 * @var array
 	 * @access public
 	 */
-	public $config = array('vts_url' => '');
+	public $config = array('vtsUrl' => '');
 	
 	/**
 	 * Define the schema of the DataSource
@@ -56,29 +56,21 @@ class TranslationRequestSource extends DataSource {
 	 * @var array
 	 * @access protected
 	 */
-	protected $_schema = array(	'id' => 				array(
-																											'type' => 'integer', 
-																											'null' => false, 
-																											'key' => 'primary'
-																							),
-															'token' => 			array(
-																											'type' => 'string', 
-																											'null' => false, 
-																											'length' => 255
-																							),
-															'created' => 		array(
-																											'type' => 'datetime', 
-																											'null' => true
-																							),
-															'modified' => 	array(
-																											'type' => 'datetime', 
-																											'null' => true
-																							),
-															'expires_at' => array(
-																											'type' => 'datetime', 
-																											'null' => true
-																							),
-	    );
+	protected $_schema = array();
+	
+	/**
+	 * column definition.  Required for cakePHP or it will barf errors.
+	 *
+	 * @var array
+	 */
+		public $columns = array(
+			'primary_key' => array('name' => 'NOT NULL AUTO_INCREMENT'),
+			'string' => array('name' => 'varchar', 'limit' => '255'),
+			'text' => array('name' => 'text'),
+			'integer' => array('name' => 'int', 'limit' => '11', 'formatter' => 'intval'),
+			'datetime' => array('name' => 'datetime', 'format' => 'Y-m-d H:i:s', 'formatter' => 'date'),
+			'boolean' => array('name' => 'tinyint', 'limit' => '1')
+		);
 	
 	/**
 	 * Initialize the DataSource
@@ -93,6 +85,17 @@ class TranslationRequestSource extends DataSource {
 	}
 	
 	/**
+	 * Required for caching
+	 *
+	 * @return null
+	 * @access public
+	 * @author Johnathan Pulos
+	 */
+	public function listSources() {
+      return null;
+  }
+	
+	/**
 	 * describe the schema of the DataSource
 	 *
 	 * @param Model $Model The Model Object
@@ -101,7 +104,7 @@ class TranslationRequestSource extends DataSource {
 	 * @author Johnathan Pulos
 	 */
 	public function describe(Model $Model) {
-		return $this->_schema;
+		return $Model->schema();
 	}
 	
 	/**
@@ -169,4 +172,34 @@ class TranslationRequestSource extends DataSource {
 		}
 		return $results;
 	}
+	
+	/**
+	 * Create a new Translation Request
+	 *
+	 * @param Model $Model The Model object
+	 * @param array $fields an array of fields to save
+	 * @param array $values an array of the values to save
+	 * @return boolean
+	 * @access public
+	 * @author Johnathan Pulos
+	 */
+	public function create(Model $Model, $fields = array(), $values = array()) {
+		$data = array();
+		$url = $this->config['vtsUrl'] . "translation_requests.json";
+    $json = $this->Http->post($url, $data);
+    $res = json_decode($json, true);
+    if (is_null($res)) {
+        throw new CakeException("The result came back empty.  Make sure you set the vtsUrl in your app/Config/database.php, and your video translator service is running.");
+    }
+		if((isset($res['vts']['translation_request'])) && (!empty($res['vts']['translation_request']))) {
+			/**
+			 * We are getting a single translation request
+			 *
+			 * @author Johnathan Pulos
+			 */
+	    $Model->id = $res['vts']['translation_request']['id'];
+		}
+		return true;
+	}
+	
 }
