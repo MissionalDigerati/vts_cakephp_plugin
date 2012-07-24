@@ -132,22 +132,31 @@ class TranslationRequestSource extends DataSource {
 	 * @author Johnathan Pulos
 	 */
 	public function read(Model $Model, $data) {
-			/**
-			 * Here we do the actual count as instructed by our calculate()
-       * method above. We could either check the remote source or some
-       * other way to get the record count. Here we'll simply return 1 so
-       * update() and delete() will assume the record exists.
-       * 
-			 * @author Johnathan Pulos
-			 */
+		/**
+		 * Here we do the actual count as instructed by our calculate()
+     * method above. We could either check the remote source or some
+     * other way to get the record count. Here we'll simply return 1 so
+     * update() and delete() will assume the record exists.
+     * 
+		 * @author Johnathan Pulos
+		 */
     if ($data['fields'] == 'COUNT') {
         return array(array(array('count' => 1)));
     }
-		$json = $this->Http->get($this->config['vtsUrl'] . 'translation_requests/1.json', array());
-    $res = json_decode($json, true);
+		if(!isset($data['conditions'])) {
+			throw new CakeException("API requires a Translation Request.id.");
+		}
+		if(isset($data['conditions'][$Model->alias . ".id"])) {
+			$id = $data['conditions'][$Model->alias . ".id"];
+		}else if(isset($data['conditions']["id"])) {
+			$id = $data['conditions']["id"];
+		}else {
+			throw new CakeException("API requires a Translation Request.id.");
+		}
+		$url = $this->config['vtsUrl'] . "translation_requests/" . $id . ".json";
+    $res = json_decode($this->Http->get($url, array()), true);
     if (is_null($res) || empty($res)) {
-        $error = "The result came back empty.  Make sure you set the vtsUrl in your app/Config/database.php, and your video translator service is running.";
-        throw new CakeException($error);
+        throw new CakeException("The result came back empty.  Make sure you set the vtsUrl in your app/Config/database.php, and your video translator service is running.");
     }
 		$results = array();
 		if(isset($res['vts']['translation_request'])) {
@@ -157,16 +166,6 @@ class TranslationRequestSource extends DataSource {
 			 * @author Johnathan Pulos
 			 */
 	    $results[] = array($Model->alias => $res['vts']['translation_request']);
-		}else if(isset($res['vts']['translation_requests'])) {
-			/**
-			 * We are getting multiple translation requests
-			 *
-			 * @author Johnathan Pulos
-			 */
-			foreach ($res['vts']['translation_requests'] as $record) {
-				$record = array($Model->alias => $record);
-				$results[] = $record;
-			}
 		}
 		return $results;
 	}
