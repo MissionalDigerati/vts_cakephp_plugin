@@ -20,10 +20,16 @@ Download the latest version, and rename the downloaded folder to _VideoTranslato
 
 *Add the following to your app/Config/database.php file*
 
-`public $vtsTranslationRequest = array(
+`
+public $vtsTranslationRequest = array(
     'datasource' => 'VideoTranslatorService.TranslationRequestSource',
     'vtsUrl' => 'http://api.obs.local/'
-);`
+);
+public $vtsClip = array(
+    'datasource' => 'VideoTranslatorService.ClipSource',
+    'vtsUrl' => 'http://api.obs.local/'
+);
+`
 
 *Add the following to your app/Config/bootstrap.php file*
 
