@@ -159,7 +159,7 @@ class ClipSource extends DataSource {
 	}
 	
 	/**
-	 * Create a new Translation Request
+	 * Create a new Clip
 	 *
 	 * @param Model $Model The Model object
 	 * @param array $fields an array of fields to save
@@ -175,6 +175,11 @@ class ClipSource extends DataSource {
 										'video_file_location' 				=> $formData['video_file_location']
 							);
 		$url = $this->config['vtsUrl'] . "clips.json";
+		if(isset($formData['vts_clip_id'])) {
+			$data['_method'] = 'PUT';
+			$data['id'] = $formData['vts_clip_id'];
+			$url = $this->config['vtsUrl'] . "clips/" . $data['id'] . ".json";
+		}
     $json = $this->curlUtility->makeRequest($url, 'POST', $data);
     $res = json_decode($json, true);
     if (is_null($res)) {
@@ -194,6 +199,24 @@ class ClipSource extends DataSource {
 			return true;
 		}
 	}
+	
+	/**
+	 * Update the Clip.  You need to set the vts_clip_id to the clip id to update.
+	 *
+	 * @param Model $Model The Model object
+	 * @param array $fields an array of fields to save
+	 * @param array $values an array of the values to save
+	 * @return boolean
+	 * @access public
+	 * @author Johnathan Pulos
+	 */
+	public function update(Model $Model, $fields = array(), $values = array()) {
+		$formData = array_combine($fields, $values);
+		if((!in_array('vts_clip_id', $fields))  || (empty($formData['vts_clip_id']))) {
+			throw new CakeException("API requires the vts_clip_id to be set to update a Clip.");
+		}
+		return $this->create($Model, $fields, $values);
+  }
 	
 	/**
 	 * Delete the TranslationRequest

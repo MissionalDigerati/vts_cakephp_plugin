@@ -54,6 +54,12 @@ class Clip extends VideoTranslatorServiceAppModel {
 																										 							'null' => false,     
 																										 							'key' => 'primary',  
 																										 							'length' => 12       
+																							 						),
+															'vts_clip_id'=>				array(                       
+																							 										'type' => 'integer', 
+																										 							'null' => false,     
+																										 							'key' => 'primary',  
+																										 							'length' => 12       
 																							 						),                           
 															'translation_request_token' => array(
 																																	'type' => 'string', 
