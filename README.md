@@ -17,17 +17,26 @@ Installation
 Download the latest version, and rename the downloaded folder to _VideoTranslatorService_. Then place the folder into your app/Plugin directory.
 
 ## Install plugin into App
+*Add the following to your app/Config/core.php file and set to your API url*
+
+`
+define("VTS_URL", "http://api.obs.local/");
+`
 
 *Add the following to your app/Config/database.php file*
 
 `
 public $vtsTranslationRequest = array(
     'datasource' => 'VideoTranslatorService.TranslationRequestSource',
-    'vtsUrl' => 'http://api.obs.local/'
+    'vtsUrl' => VTS_URL
 );
 public $vtsClip = array(
     'datasource' => 'VideoTranslatorService.ClipSource',
-    'vtsUrl' => 'http://api.obs.local/'
+    'vtsUrl' => VTS_URL
+);
+public $vtsMasterRecording = array(
+    'datasource' => 'VideoTranslatorService.MasterRecordingSource',
+    'vtsUrl' => VTS_URL
 );
 `
 
