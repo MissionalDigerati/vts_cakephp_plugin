@@ -155,6 +155,47 @@ class ClipSource extends DataSource {
     if ($data['fields'] == 'COUNT') {
         return array(array(array('count' => 1)));
     }
+		$limit = false;
+		if (empty($data['limit'])) {
+			if((isset($data['conditions'])) && (!empty($data['conditions']))) {
+				$translationRequestToken = '';
+				/**
+				 * determine the translation_request_token based on the conditions
+				 *
+				 * @author Johnathan Pulos
+				 */
+				if((is_string($data['conditions'])) && (strpos($data['conditions'], 'translation_request_token') !== false)) {
+					preg_match('/translation_request_token\s*=\s*\'?"?(\w+)\'?"?/', $data['conditions'], $matches);
+					if((!empty($matches)) && (isset($matches[1]))) {
+						$translationRequestToken = $matches[1];
+					} else{
+						throw new CakeException("Please check your condition.  Unable to locate the translation request token.");
+					}
+				}else if((is_array($data['conditions'])) && (array_key_exists('translation_request_token', $data['conditions']))) {
+					$translationRequestToken = $data['conditions']['translation_request_token'];
+				}else{
+					throw new CakeException("A Translation Request Token is required to get all the clips related to it.");
+				}
+				$url = $this->config['vtsUrl'] . "clips.json?translation_request_token=" . $translationRequestToken;
+		    $json = $this->curlUtility->makeRequest($url, 'GET');
+		    $res = json_decode($json, true);
+		    if (is_null($res)) {
+		        throw new CakeException("The result came back empty.  Make sure you set the vtsUrl in your app/Config/database.php, and your video translator service is running.");
+		    }
+				if($res['vts']['status'] == 'error') {
+					return false;
+				}else {
+					$results = array();
+					if(isset($res['vts']['clips'])) {
+				    $results[$Model->alias . "s"] = $res['vts']['clips'];
+						$results['Translation']['ready_for_processing'] = $res['vts']['ready_for_processing'];
+					}
+					return $results;
+				}
+			}else {
+				throw new CakeException("A Translation Request Token is required to get all the clips related to it.");
+			}
+		}
 		return array();
 	}
 	
@@ -219,7 +260,12 @@ class ClipSource extends DataSource {
   }
 	
 	/**
-	 * Delete the TranslationRequest
+	 * Delete the Clip
+	 * example:
+	 * 
+	 * 	$this->Clip->id = 14;
+	 * $this->Clip->translation_request_token = $translation['Translation']['token'];
+	 * $this->Clip->delete();
 	 *
 	 * @param Model $Model The Model Object
 	 * @param array $conditions array of conditions
@@ -228,7 +274,21 @@ class ClipSource extends DataSource {
 	 * @author Johnathan Pulos
 	 */
 	public function delete(Model $Model, $conditions = null) {
-		return true;
+		$id = $this->getModelId($Model, $conditions);
+		if(!isset($Model->translation_request_token)) {
+			throw new CakeException("API requires a Clip.translation_request_token.");
+		}
+		$url = $this->config['vtsUrl'] . "clips/" . $id . ".json";
+		$json = $this->Http->post($url, array('id' => $id, '_method' => 'DELETE', 'translation_request_token' => $Model->translation_request_token));
+		$res = json_decode($json, true);
+    if (is_null($res)) {
+        throw new CakeException("The result came back empty.  Make sure you set the vtsUrl in your app/Config/database.php, and your video translator service is running.");
+    }
+		if($res['vts']['status'] == 'error') {
+			return false;
+		}else {
+			return true;
+		}
 	}
 	
 	/**
@@ -246,7 +306,7 @@ class ClipSource extends DataSource {
 		}else if(isset($conditions["id"])) {
 			return $conditions["id"];
 		}else {
-			throw new CakeException("API requires a Translation Request.id.");
+			throw new CakeException("API requires a Clip.id.");
 		}
 	}
 	
