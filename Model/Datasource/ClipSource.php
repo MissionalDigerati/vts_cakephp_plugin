@@ -158,23 +158,9 @@ class ClipSource extends DataSource {
 		$limit = false;
 		if (empty($data['limit'])) {
 			if((isset($data['conditions'])) && (!empty($data['conditions']))) {
-				$translationRequestToken = '';
-				/**
-				 * determine the translation_request_token based on the conditions
-				 *
-				 * @author Johnathan Pulos
-				 */
-				if((is_string($data['conditions'])) && (strpos($data['conditions'], 'translation_request_token') !== false)) {
-					preg_match('/translation_request_token\s*=\s*\'?"?(\w+)\'?"?/', $data['conditions'], $matches);
-					if((!empty($matches)) && (isset($matches[1]))) {
-						$translationRequestToken = $matches[1];
-					} else{
-						throw new CakeException("Please check your condition.  Unable to locate the translation request token.");
-					}
-				}else if((is_array($data['conditions'])) && (array_key_exists('translation_request_token', $data['conditions']))) {
-					$translationRequestToken = $data['conditions']['translation_request_token'];
-				}else{
-					throw new CakeException("A Translation Request Token is required to get all the clips related to it.");
+				$translationRequestToken = $this->getToken($data['conditions']);
+				if($translationRequestToken == '') {
+					throw new CakeException("Please check your condition.  Unable to locate the translation request token.");
 				}
 				$url = $this->config['vtsUrl'] . "clips.json?translation_request_token=" . $translationRequestToken;
 		    $json = $this->curlUtility->makeRequest($url, 'GET');
@@ -299,6 +285,7 @@ class ClipSource extends DataSource {
 	 * @return integer
 	 * @access private
 	 * @author Johnathan Pulos
+	 * @todo Can we pull this out, since it is used in another datasource
 	 */
 	private function getModelId(Model $Model, $conditions) {
 		if(isset($conditions[$Model->alias . ".id"])) {
@@ -308,6 +295,33 @@ class ClipSource extends DataSource {
 		}else {
 			throw new CakeException("API requires a Clip.id.");
 		}
+	}
+	
+	/**
+	 * Get the translation_request_token based on the supplied conditions
+	 *
+	 * @param mixed $conditions the conditions
+	 * @return string
+	 * @access private
+	 * @author Johnathan Pulos
+	 * @todo Can we pull this out, since it is used in another datasource
+	 */
+	private function getToken($conditions) {
+		$translationRequestToken = '';
+		/**
+		 * determine the translation_request_token based on the conditions
+		 *
+		 * @author Johnathan Pulos
+		 */
+		if((is_string($conditions)) && (strpos($conditions, 'translation_request_token') !== false)) {
+			preg_match('/translation_request_token\s*=\s*\'?"?(\w+)\'?"?/', $conditions, $matches);
+			if((!empty($matches)) && (isset($matches[1]))) {
+				$translationRequestToken = $matches[1];
+			}
+		}else if((is_array($conditions)) && (array_key_exists('translation_request_token', $conditions))) {
+			$translationRequestToken = $conditions['translation_request_token'];
+		}
+		return $translationRequestToken;
 	}
 	
 }

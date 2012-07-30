@@ -146,7 +146,29 @@ class MasterRecordingSource extends DataSource {
     if ($data['fields'] == 'COUNT') {
         return array(array(array('count' => 1)));
     }
-		return array();
+		if(!isset($data['conditions'])) {
+			throw new CakeException("API requires a Translation Request.id.");
+		}
+		$id = $this->getModelId($Model, $data['conditions']);
+		$translationRequestToken = $this->getToken($data['conditions']);
+		if($translationRequestToken == '') {
+			throw new CakeException("Please check your condition.  Unable to locate the translation request token.");
+		}
+		$url = $this->config['vtsUrl'] . "master_recordings/" . $id . ".json";
+    $res = json_decode($this->Http->get($url, array('translation_request_token' => $translationRequestToken)), true);
+    if (is_null($res) || empty($res)) {
+        throw new CakeException("The result came back empty.  Make sure you set the vtsUrl in your app/Config/database.php, and your video translator service is running.");
+    }
+		$results = array();
+		if(isset($res['vts']['master_recording'])) {
+			/**
+			 * We are getting a single translation request
+			 *
+			 * @author Johnathan Pulos
+			 */
+	    $results[] = array($Model->alias => $res['vts']['master_recording']);
+		}
+		return $results;
 	}
 	
 	/**
@@ -203,6 +225,7 @@ class MasterRecordingSource extends DataSource {
 	 * @return integer
 	 * @access private
 	 * @author Johnathan Pulos
+	 * @todo Can we pull this out, since it is used in another datasource
 	 */
 	private function getModelId(Model $Model, $conditions) {
 		if(isset($conditions[$Model->alias . ".id"])) {
@@ -212,6 +235,33 @@ class MasterRecordingSource extends DataSource {
 		}else {
 			throw new CakeException("API requires a Translation Request.id.");
 		}
+	}
+	
+	/**
+	 * Get the translation_request_token based on the supplied conditions
+	 *
+	 * @param mixed $conditions the conditions
+	 * @return string
+	 * @access private
+	 * @author Johnathan Pulos
+	 * @todo Can we pull this out, since it is used in another datasource
+	 */
+	private function getToken($conditions) {
+		$translationRequestToken = '';
+		/**
+		 * determine the translation_request_token based on the conditions
+		 *
+		 * @author Johnathan Pulos
+		 */
+		if((is_string($conditions)) && (strpos($conditions, 'translation_request_token') !== false)) {
+			preg_match('/translation_request_token\s*=\s*\'?"?(\w+)\'?"?/', $conditions, $matches);
+			if((!empty($matches)) && (isset($matches[1]))) {
+				$translationRequestToken = $matches[1];
+			}
+		}else if((is_array($conditions)) && (array_key_exists('translation_request_token', $conditions))) {
+			$translationRequestToken = $conditions['translation_request_token'];
+		}
+		return $translationRequestToken;
 	}
 	
 }

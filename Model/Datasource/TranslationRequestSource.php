@@ -232,6 +232,7 @@ class TranslationRequestSource extends DataSource {
 	 * @return integer
 	 * @access private
 	 * @author Johnathan Pulos
+	 * @todo Can we pull this out, since it is used in another datasource
 	 */
 	private function getModelId(Model $Model, $conditions) {
 		if(isset($conditions[$Model->alias . ".id"])) {
