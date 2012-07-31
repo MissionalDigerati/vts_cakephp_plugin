@@ -214,7 +214,21 @@ class MasterRecordingSource extends DataSource {
 	 * @author Johnathan Pulos
 	 */
 	public function delete(Model $Model, $conditions = null) {
-		return true;
+		$id = $this->getModelId($Model, $conditions);
+		if(!isset($Model->translation_request_token)) {
+			throw new CakeException("API requires a MasterRecording.translation_request_token.");
+		}
+		$url = $this->config['vtsUrl'] . "master_recordings/" . $id . ".json";
+		$json = $this->Http->post($url, array('id' => $id, '_method' => 'DELETE', 'translation_request_token' => $Model->translation_request_token));
+		$res = json_decode($json, true);
+    if (is_null($res)) {
+        throw new CakeException("The result came back empty.  Make sure you set the vtsUrl in your app/Config/database.php, and your video translator service is running.");
+    }
+		if($res['vts']['status'] == 'error') {
+			return false;
+		}else {
+			return true;
+		}
 	}
 	
 	/**
