@@ -1,14 +1,14 @@
 Video Translation API CakePHP 2.x Plugin 
 ========================================
 
-A CakePHP plugin for interacting with the [Video Translation API](https://github.com/MissionalDigerati/video_translator_service).  You will need to have the Video Translation API running on a seperate server before being able to utilize this CakePHP plugin.
+A CakePHP plugin for interacting with the [Video Translator API](https://github.com/MissionalDigerati/video_translator_service).  You will need to have the Video Translation API running on a separate server before being able to utilize this CakePHP plugin.
 
 Requirements
 ------------
 
 * PHP 5.28 >
 * [CakePHP Framework 2.x](http://cakephp.org)
-* A [Video Translation API](https://github.com/MissionalDigerati/video_translator_service) Instance running
+* A [Video Translator API](https://github.com/MissionalDigerati/video_translator_service) Instance running
 
 Installation
 ------------
