@@ -81,6 +81,11 @@ class Clip extends VideoTranslatorServiceAppModel {
 																																	'null' => false, 
 																																	'length' => 255
 																													),
+															'mime_type' => 							array(
+																																	'type' => 'string', 
+																																	'null' => false, 
+																																	'length' => 255
+																												),
 															'status' => 									array(
 																																	'type' => 'string', 
 																																	'null' => false, 

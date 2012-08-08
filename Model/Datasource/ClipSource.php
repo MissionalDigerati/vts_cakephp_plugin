@@ -198,7 +198,7 @@ class ClipSource extends DataSource {
 	public function create(Model $Model, $fields = array(), $values = array()) {
 		$formData = array_combine($fields, $values);
 		$data = array(	'translation_request_token' 	=> $formData['translation_request_token'],
-										'audio_file' 									=> '@'.$formData['audio_file'].";type=audio/mp3",
+										'audio_file' 									=> '@'.$formData['audio_file'].";type=".$formData['mime_type'],
 										'video_file_location' 				=> $formData['video_file_location']
 							);
 		$url = $this->config['vtsUrl'] . "clips.json";
