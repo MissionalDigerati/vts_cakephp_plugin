@@ -181,7 +181,7 @@ class ClipSource extends DataSource {
 			    $results[$Model->alias . "s"] = $res['vts']['clips'];
 					$results['Translation']['ready_for_processing'] = $res['vts']['ready_for_processing'];
 				} else if(isset($res['vts']['clip'])){
-					$results[$Model->alias] = $res['vts']['clip'];
+					$results[0][$Model->alias] = $res['vts']['clip'];
 				}
 				return $results;
 			}
