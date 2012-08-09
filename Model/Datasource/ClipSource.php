@@ -156,31 +156,35 @@ class ClipSource extends DataSource {
         return array(array(array('count' => 1)));
     }
 		$limit = false;
-		if (empty($data['limit'])) {
-			if((isset($data['conditions'])) && (!empty($data['conditions']))) {
-				$translationRequestToken = $this->getToken($data['conditions']);
-				if($translationRequestToken == '') {
-					throw new CakeException("Please check your condition.  Unable to locate the translation request token.");
-				}
-				$url = $this->config['vtsUrl'] . "clips.json?translation_request_token=" . $translationRequestToken;
-		    $json = $this->curlUtility->makeRequest($url, 'GET');
-		    $res = json_decode($json, true);
-		    if (is_null($res)) {
-		        throw new CakeException("The result came back empty.  Make sure you set the vtsUrl in your app/Config/database.php, and your video translator service is running.");
-		    }
-				if($res['vts']['status'] == 'error') {
-					return false;
-				}else {
-					$results = array();
-					if(isset($res['vts']['clips'])) {
-				    $results[$Model->alias . "s"] = $res['vts']['clips'];
-						$results['Translation']['ready_for_processing'] = $res['vts']['ready_for_processing'];
-					}
-					return $results;
-				}
-			}else {
-				throw new CakeException("A Translation Request Token is required to get all the clips related to it.");
+		if((isset($data['conditions'])) && (!empty($data['conditions']))) {
+			$translationRequestToken = $this->getToken($data['conditions']);
+			if($translationRequestToken == '') {
+				throw new CakeException("Please check your condition.  Unable to locate the translation request token.");
 			}
+			if (empty($data['limit'])) {
+				$url = $this->config['vtsUrl'] . "clips.json?translation_request_token=" . $translationRequestToken;
+			} else if($data['limit'] == 1){
+				$url = $this->config['vtsUrl'] . "clips/" . $Model->id . ".json?translation_request_token=" . $translationRequestToken;
+			} else{
+				throw new CakeException("Can not retrieve a limit of records.");
+			}
+	    $json = $this->curlUtility->makeRequest($url, 'GET');
+	    $res = json_decode($json, true);
+	    if (is_null($res)) {
+	        throw new CakeException("The result came back empty.  Make sure you set the vtsUrl in your app/Config/database.php, and your video translator service is running.");
+	    }
+			if($res['vts']['status'] == 'error') {
+				return false;
+			}else {
+				$results = array();
+				if(isset($res['vts']['clips'])) {
+			    $results[$Model->alias . "s"] = $res['vts']['clips'];
+					$results['Translation']['ready_for_processing'] = $res['vts']['ready_for_processing'];
+				}
+				return $results;
+			}
+		}else {
+			throw new CakeException("A Translation Request Token is required to get all the clips related to it.");
 		}
 		return array();
 	}
