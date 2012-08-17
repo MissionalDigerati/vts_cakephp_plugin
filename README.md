@@ -1,14 +1,14 @@
-Video Translation API CakePHP 2.x Plugin 
-========================================
+VTS API CakePHP Plugin 
+======================
 
-A CakePHP plugin for interacting with the [Video Translator API](https://github.com/MissionalDigerati/video_translator_service).  You will need to have the Video Translation API running on a separate server before being able to utilize this CakePHP plugin.
+A CakePHP plugin for interacting with the [VTS API](https://github.com/MissionalDigerati/vts_api).  You will need to have the Video Translation API running on a separate server before being able to utilize this CakePHP plugin.
 
 Requirements
 ------------
 
 * PHP 5.28 >
 * [CakePHP Framework 2.x](http://cakephp.org)
-* A [Video Translator API](https://github.com/MissionalDigerati/video_translator_service) Instance running
+* A [VTS API](https://github.com/MissionalDigerati/vts_api) Instance running
 
 Installation
 ------------
@@ -52,6 +52,6 @@ CakePlugin::load('VideoTranslatorService');
 Development
 -----------
 
-Questions or problems? Please post them on the [issue tracker](https://github.com/MissionalDigerati/video_translator_service_cakephp_plugin/issues). You can contribute changes by forking the project and submitting a pull request.
+Questions or problems? Please post them on the [issue tracker](https://github.com/MissionalDigerati/vts_cakephp_plugin/issues). You can contribute changes by forking the project and submitting a pull request.
 
 This script is created by Johnathan Pulos and is under the [GNU General Public License v3](http://www.gnu.org/licenses/gpl-3.0-standalone.html).
