@@ -156,6 +156,14 @@ class TranslationRequestSource extends DataSource {
         throw new CakeException("The result came back empty.  Make sure you set the vtsUrl in your app/Config/database.php, and your video translator service is running.");
     }
 		$results = array();
+		if($res['vts']['status'] == 'error') {
+			$error = "VTS ERROR (Reading a Translation Request) - Message: " . $res['vts']['message'];
+			if(isset($res['vts']['details'])) {
+				$error .= " Details: " . $res['vts']['details'];
+			}
+			$this->log($error);
+			return array();
+		}
 		if(isset($res['vts']['translation_request'])) {
 			/**
 			 * We are getting a single translation request
@@ -185,6 +193,14 @@ class TranslationRequestSource extends DataSource {
     if (is_null($res)) {
         throw new CakeException("The result came back empty.  Make sure you set the vtsUrl in your app/Config/database.php, and your video translator service is running.");
     }
+		if($res['vts']['status'] == 'error') {
+			$error = "VTS ERROR (Creating a Translation Request) - Message: " . $res['vts']['message'];
+			if(isset($res['vts']['details'])) {
+				$error .= " Details: " . $res['vts']['details'];
+			}
+			$this->log($error);
+			return false;
+		}
 		if((isset($res['vts']['translation_request'])) && (!empty($res['vts']['translation_request']))) {
 			/**
 			 * We are getting a single translation request
@@ -192,12 +208,9 @@ class TranslationRequestSource extends DataSource {
 			 * @author Johnathan Pulos
 			 */
 	    $Model->id = $res['vts']['translation_request']['id'];
-		}
-		if($res['vts']['status'] == 'error') {
-			return false;
-		}else {
 			return true;
 		}
+		return false;
 	}
 	
 	/**
@@ -218,6 +231,11 @@ class TranslationRequestSource extends DataSource {
         throw new CakeException("The result came back empty.  Make sure you set the vtsUrl in your app/Config/database.php, and your video translator service is running.");
     }
 		if($res['vts']['status'] == 'error') {
+			$error = "VTS ERROR (Deleting a Translation Request) - Message: " . $res['vts']['message'];
+			if(isset($res['vts']['details'])) {
+				$error .= " Details: " . $res['vts']['details'];
+			}
+			$this->log($error);
 			return false;
 		}else {
 			return true;

@@ -174,7 +174,12 @@ class ClipSource extends DataSource {
 	        throw new CakeException("The result came back empty.  Make sure you set the vtsUrl in your app/Config/database.php, and your video translator service is running.");
 	    }
 			if($res['vts']['status'] == 'error') {
-				return false;
+				$error = "VTS ERROR (Reading a clip) - Message: " . $res['vts']['message'];
+				if(isset($res['vts']['details'])) {
+					$error .= " Details: " . $res['vts']['details'];
+				}
+				$this->log($error);
+				return array();
 			}else {
 				$results = array();
 				if(isset($res['vts']['clips'])) {
@@ -218,6 +223,14 @@ class ClipSource extends DataSource {
     if (is_null($res)) {
         throw new CakeException("The result came back empty.  Make sure you set the vtsUrl in your app/Config/database.php, and your video translator service is running.");
     }
+		if($res['vts']['status'] == 'error') {
+			$error = "VTS ERROR (Creating/Updating a clip) - Message: " . $res['vts']['message'];
+			if(isset($res['vts']['details'])) {
+				$error .= " Details: " . $res['vts']['details'];
+			}
+			$this->log($error);
+			return false;
+		}
 		if((isset($res['vts']['clip'])) && (!empty($res['vts']['clip']))) {
 			/**
 			 * We are getting a single translation request
@@ -225,12 +238,9 @@ class ClipSource extends DataSource {
 			 * @author Johnathan Pulos
 			 */
 	    $Model->id = $res['vts']['clip']['id'];
-		}
-		if($res['vts']['status'] == 'error') {
-			return false;
-		}else {
 			return true;
 		}
+		return false;
 	}
 	
 	/**
@@ -277,6 +287,11 @@ class ClipSource extends DataSource {
         throw new CakeException("The result came back empty.  Make sure you set the vtsUrl in your app/Config/database.php, and your video translator service is running.");
     }
 		if($res['vts']['status'] == 'error') {
+			$error = "VTS ERROR (Deleting a clip) - Message: " . $res['vts']['message'];
+			if(isset($res['vts']['details'])) {
+				$error .= " Details: " . $res['vts']['details'];
+			}
+			$this->log($error);
 			return false;
 		}else {
 			return true;
