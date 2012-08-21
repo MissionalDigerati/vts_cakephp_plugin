@@ -29,11 +29,16 @@ Installation
 
 Download the latest version, and rename the downloaded folder to _VideoTranslatorService_. Then place the folder into your app/Plugin directory.
 
+## Create an API Key on the VTS API server
+
+Visit the domain of your VTS API server, and login with the administrator credentials.  Click the **Add an API Key** button, fill out the form, and submit it.  Copy the API Key.
+
 ## Install plugin into App
 *Add the following to your app/Config/core.php file and set to your API url*
 
 ```php
 define("VTS_URL", "http://api.obs.local/");
+define("VTS_API_KEY", "your_api_key");
 ```
 
 *Add the following to your app/Config/database.php file*
@@ -41,17 +46,20 @@ define("VTS_URL", "http://api.obs.local/");
 ```php
 public $vtsTranslationRequest = array(
     'datasource' => 'VideoTranslatorService.TranslationRequestSource',
-    'vtsUrl' => VTS_URL
+    'vtsUrl' => VTS_URL,
+	'vtsApiKey' => VTS_API_KEY
 );
 
 public $vtsClip = array(
     'datasource' => 'VideoTranslatorService.ClipSource',
-    'vtsUrl' => VTS_URL
+    'vtsUrl' => VTS_URL,
+	'vtsApiKey' => VTS_API_KEY
 );
 
 public $vtsMasterRecording = array(
     'datasource' => 'VideoTranslatorService.MasterRecordingSource',
-    'vtsUrl' => VTS_URL
+    'vtsUrl' => VTS_URL,
+	'vtsApiKey' => VTS_API_KEY
 );
 ```
 

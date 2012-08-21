@@ -54,7 +54,7 @@ class ClipSource extends DataSource {
 	 * @var array
 	 * @access public
 	 */
-	public $config = array('vtsUrl' => '');
+	public $config = array('vtsUrl' => '', 'vtsApiKey' => '');
 	
 	/**
 	 * Define the schema of the DataSource

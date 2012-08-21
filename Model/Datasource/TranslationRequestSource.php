@@ -48,7 +48,7 @@ class TranslationRequestSource extends DataSource {
 	 * @var array
 	 * @access public
 	 */
-	public $config = array('vtsUrl' => '');
+	public $config = array('vtsUrl' => '', 'vtsApiKey' => '');
 	
 	/**
 	 * Define the schema of the DataSource
@@ -151,7 +151,7 @@ class TranslationRequestSource extends DataSource {
 		}
 		$id = $this->getModelId($Model, $data['conditions']);
 		$url = $this->config['vtsUrl'] . "translation_requests/" . $id . ".json";
-    $res = json_decode($this->Http->get($url, array()), true);
+    $res = json_decode($this->Http->get($url, array('api_key' => $this->config['vtsApiKey'])), true);
     if (is_null($res) || empty($res)) {
         throw new CakeException("The result came back empty.  Make sure you set the vtsUrl in your app/Config/database.php, and your video translator service is running.");
     }
@@ -178,7 +178,7 @@ class TranslationRequestSource extends DataSource {
 	 * @author Johnathan Pulos
 	 */
 	public function create(Model $Model, $fields = array(), $values = array()) {
-		$data = array();
+		$data = array('api_key' => $this->config['vtsApiKey']);
 		$url = $this->config['vtsUrl'] . "translation_requests.json";
     $json = $this->Http->post($url, $data);
     $res = json_decode($json, true);
@@ -212,7 +212,7 @@ class TranslationRequestSource extends DataSource {
 	public function delete(Model $Model, $conditions = null) {
 		$id = $this->getModelId($Model, $conditions);
 		$url = $this->config['vtsUrl'] . "translation_requests/" . $id . ".json";
-		$json = $this->Http->post($url, array('id' => $id, '_method' => 'DELETE'));
+		$json = $this->Http->post($url, array('id' => $id, '_method' => 'DELETE', 'api_key' => $this->config['vtsApiKey']));
 		$res = json_decode($json, true);
     if (is_null($res)) {
         throw new CakeException("The result came back empty.  Make sure you set the vtsUrl in your app/Config/database.php, and your video translator service is running.");
