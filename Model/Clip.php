@@ -60,7 +60,13 @@ class Clip extends VideoTranslatorServiceAppModel {
 																										 							'null' => false,     
 																										 							'key' => 'primary',  
 																										 							'length' => 12       
-																							 						),                           
+																							 						),
+																'order_by'=>				array(                       
+																								 										'type' => 'integer', 
+																											 							'null' => false,     
+																											 							'key' => 'primary',  
+																											 							'length' => 12       
+																								 						),                           
 															'translation_request_token' => array(
 																																	'type' => 'string', 
 																																	'null' => false, 

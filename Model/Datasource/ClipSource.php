@@ -210,7 +210,8 @@ class ClipSource extends DataSource {
 		$formData = array_combine($fields, $values);
 		$data = array(	'translation_request_token' 	=> $formData['translation_request_token'],
 										'audio_file' 									=> '@'.$formData['audio_file'].";type=".$formData['mime_type'],
-										'video_file_location' 				=> $formData['video_file_location']
+										'video_file_location' 				=> $formData['video_file_location'],
+										'order_by' 										=> $formData['order_by']
 							);
 		$url = $this->config['vtsUrl'] . "clips.json";
 		if(isset($formData['vts_clip_id'])) {
