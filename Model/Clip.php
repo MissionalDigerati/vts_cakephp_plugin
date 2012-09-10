@@ -42,6 +42,16 @@ class Clip extends VideoTranslatorServiceAppModel {
 	 * @access public
 	 */
 	public $useTable = false;
+	/**
+	 * Setup validators for the Clip model
+	 *
+	 * @var array
+	 */
+	public $validate = array('video_file_location' =>	array(	'rule'			=>	'notEmpty',	
+																																'message'		=>	'This field cannot be left blank.',
+																																'required'	=>	true
+																															)
+													);
 	
 	/**
 	 * Define the schema of the Model
