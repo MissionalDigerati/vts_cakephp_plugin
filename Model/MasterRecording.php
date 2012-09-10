@@ -44,6 +44,29 @@ class MasterRecording extends VideoTranslatorServiceAppModel {
 	public $useTable = false;
 	
 	/**
+	 * Setup validators for the Clip model
+	 *
+	 * @var array
+	 */
+	public $validate = array('translation_request_token' =>	array(	'rule'			=>	'notEmpty',	
+																																	'message'		=>	'The translation request token cannot be left blank.',
+																																	'required'	=>	true
+																													),
+													'title' =>	array(	'rule'			=>	'notEmpty',	
+																									'message'		=>	'The title field cannot be left blank.',
+																									'required'	=>	true
+																							),
+													'language' =>	array(	'rule'			=>	'notEmpty',	
+																									'message'		=>	'The language field cannot be left blank.',
+																									'required'	=>	true
+																							),
+													'final_filename' =>	array('rule'			=>	'notEmpty',	
+																									'message'		=>	'The final filename field cannot be left blank.',
+																									'required'	=>	true
+																							)
+													);
+	
+	/**
 	 * Define the schema of the Model
 	 *
 	 * @var array

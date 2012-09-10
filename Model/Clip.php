@@ -52,7 +52,7 @@ class Clip extends VideoTranslatorServiceAppModel {
 																																'required'	=>	true
 																															),
 													'translation_request_token' =>	array(	'rule'			=>	'notEmpty',	
-																																	'message'		=>	'This translation request token cannot be left blank.',
+																																	'message'		=>	'The translation request token cannot be left blank.',
 																																	'required'	=>	true
 																													),
 													'audio_file' =>	array(	'rule'			=>	'notEmpty',	
