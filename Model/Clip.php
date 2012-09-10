@@ -47,10 +47,26 @@ class Clip extends VideoTranslatorServiceAppModel {
 	 *
 	 * @var array
 	 */
-	public $validate = array('video_file_location' =>	array(	'rule'			=>	'notEmpty',	
-																																'message'		=>	'This field cannot be left blank.',
+	public $validate = array('video_file_location' =>	array(			'rule'			=>	'notEmpty',	
+																																'message'		=>	'The video file location cannot be left blank.',
 																																'required'	=>	true
-																															)
+																															),
+													'translation_request_token' =>	array(	'rule'			=>	'notEmpty',	
+																																	'message'		=>	'This translation request token cannot be left blank.',
+																																	'required'	=>	true
+																													),
+													'audio_file' =>	array(	'rule'			=>	'notEmpty',	
+																									'message'		=>	'An audio file must be present.',
+																									'required'	=>	true
+																							),
+													'mime_type' =>	array(	'rule'			=>	'notEmpty',	
+																									'message'		=>	'The mime type must be set.',
+																									'required'	=>	true
+																							),
+													'order_by' =>	array(	'rule'			=>	'notEmpty',	
+																									'message'		=>	'The order by field cannot be left blank.',
+																									'required'	=>	true
+																							)
 													);
 	
 	/**
