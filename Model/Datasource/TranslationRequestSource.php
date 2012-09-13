@@ -27,6 +27,12 @@
  */
 App::uses('HttpSocket', 'Network/Http');
 /**
+ * Get the sharedDSMethods in Vendor directory of plugin.
+ *
+ * @author Johnathan Pulos
+ */
+App::import('Vendor', 'VideoTranslatorService.sharedDSMethods');
+/**
  * This is a datasource for interacting with the Video Translator Service Translation Request Model
  *
  * @package Video Translator Service CakePHP Plugin
@@ -71,6 +77,12 @@ class TranslationRequestSource extends DataSource {
 			'datetime' => array('name' => 'datetime', 'format' => 'Y-m-d H:i:s', 'formatter' => 'date'),
 			'boolean' => array('name' => 'tinyint', 'limit' => '1')
 		);
+		/**
+		 * The sharedDSMethods object
+		 *
+		 * @var object
+		 */
+		public $sharedMethods;
 	
 	/**
 	 * Initialize the DataSource
@@ -82,6 +94,7 @@ class TranslationRequestSource extends DataSource {
 	public function __construct($config) {        
 		parent::__construct($config);
 		$this->Http = new HttpSocket();
+		$this->sharedMethods = new sharedDSMethods();
 	}
 	
 	/**
@@ -149,7 +162,7 @@ class TranslationRequestSource extends DataSource {
 		if(!isset($data['conditions'])) {
 			throw new CakeException("API requires a Translation Request.id.");
 		}
-		$id = $this->getModelId($Model, $data['conditions']);
+		$id = $this->sharedMethods->getModelId($Model, $data['conditions']);
 		$url = $this->config['vtsUrl'] . "translation_requests/" . $id . ".json";
     $res = json_decode($this->Http->get($url, array('api_key' => $this->config['vtsApiKey'])), true);
     if (is_null($res) || empty($res)) {
@@ -223,7 +236,7 @@ class TranslationRequestSource extends DataSource {
 	 * @author Johnathan Pulos
 	 */
 	public function delete(Model $Model, $conditions = null) {
-		$id = $this->getModelId($Model, $conditions);
+		$id = $this->sharedMethods->getModelId($Model, $conditions);
 		$url = $this->config['vtsUrl'] . "translation_requests/" . $id . ".json";
 		$json = $this->Http->post($url, array('id' => $id, '_method' => 'DELETE', 'api_key' => $this->config['vtsApiKey']));
 		$res = json_decode($json, true);
@@ -239,26 +252,6 @@ class TranslationRequestSource extends DataSource {
 			return false;
 		}else {
 			return true;
-		}
-	}
-	
-	/**
-	 * Get the Model.id based on the passed conditions
-	 *
-	 * @param Model $Model The Model Object
-	 * @param array $conditions an array of conditions
-	 * @return integer
-	 * @access private
-	 * @author Johnathan Pulos
-	 * @todo Can we pull this out, since it is used in another datasource
-	 */
-	private function getModelId(Model $Model, $conditions) {
-		if(isset($conditions[$Model->alias . ".id"])) {
-			return $conditions[$Model->alias . ".id"];
-		}else if(isset($conditions["id"])) {
-			return $conditions["id"];
-		}else {
-			throw new CakeException("API requires a Translation Request.id.");
 		}
 	}
 	
