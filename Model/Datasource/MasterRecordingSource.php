@@ -27,6 +27,12 @@
  */
 App::uses('HttpSocket', 'Network/Http');
 /**
+ * Get the sharedDSMethods in Vendor directory of plugin.
+ *
+ * @author Johnathan Pulos
+ */
+App::import('Vendor', 'VideoTranslatorService.sharedDSMethods');
+/**
  * This is a datasource for interacting with the Video Translator Service Master Recording Model
  *
  * @package Video Translator Service CakePHP Plugin
@@ -71,6 +77,12 @@ class MasterRecordingSource extends DataSource {
 			'datetime' => array('name' => 'datetime', 'format' => 'Y-m-d H:i:s', 'formatter' => 'date'),
 			'boolean' => array('name' => 'tinyint', 'limit' => '1')
 		);
+		/**
+		 * The sharedDSMethods object
+		 *
+		 * @var object
+		 */
+		public $sharedMethods;
 	
 	/**
 	 * Initialize the DataSource
@@ -82,6 +94,7 @@ class MasterRecordingSource extends DataSource {
 	public function __construct($config) {        
 		parent::__construct($config);
 		$this->Http = new HttpSocket();
+		$this->sharedMethods = new sharedDSMethods();
 	}
 	
 	/**
@@ -149,7 +162,7 @@ class MasterRecordingSource extends DataSource {
 		if(!isset($data['conditions'])) {
 			throw new CakeException("API requires a Translation Request.id.");
 		}
-		$id = $this->getModelId($Model, $data['conditions']);
+		$id = $this->sharedMethods->getModelId($Model, $data['conditions']);
 		$translationRequestToken = $this->getToken($data['conditions']);
 		if($translationRequestToken == '') {
 			throw new CakeException("Please check your condition.  Unable to locate the translation request token.");
@@ -227,7 +240,7 @@ class MasterRecordingSource extends DataSource {
 	 * @author Johnathan Pulos
 	 */
 	public function delete(Model $Model, $conditions = null) {
-		$id = $this->getModelId($Model, $conditions);
+		$id = $this->sharedMethods->getModelId($Model, $conditions);
 		if(!isset($Model->translation_request_token)) {
 			throw new CakeException("API requires a MasterRecording.translation_request_token.");
 		}
@@ -246,26 +259,6 @@ class MasterRecordingSource extends DataSource {
 			return false;
 		}else {
 			return true;
-		}
-	}
-	
-	/**
-	 * Get the Model.id based on the passed conditions
-	 *
-	 * @param Model $Model The Model Object
-	 * @param array $conditions an array of conditions
-	 * @return integer
-	 * @access private
-	 * @author Johnathan Pulos
-	 * @todo Can we pull this out, since it is used in another datasource
-	 */
-	private function getModelId(Model $Model, $conditions) {
-		if(isset($conditions[$Model->alias . ".id"])) {
-			return $conditions[$Model->alias . ".id"];
-		}else if(isset($conditions["id"])) {
-			return $conditions["id"];
-		}else {
-			throw new CakeException("API requires a Translation Request.id.");
 		}
 	}
 	
