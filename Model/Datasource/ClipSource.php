@@ -174,7 +174,7 @@ class ClipSource extends DataSource {
     }
 		$limit = false;
 		if((isset($data['conditions'])) && (!empty($data['conditions']))) {
-			$translationRequestToken = $this->getToken($data['conditions']);
+			$translationRequestToken = $this->sharedMethods->getToken($data['conditions']);
 			$id = $this->sharedMethods->getModelId($Model, $data['conditions']);
 			if($translationRequestToken == '') {
 				throw new CakeException("Please check your condition.  Unable to locate the translation request token.");
@@ -315,33 +315,6 @@ class ClipSource extends DataSource {
 		}else {
 			return true;
 		}
-	}
-	
-	/**
-	 * Get the translation_request_token based on the supplied conditions
-	 *
-	 * @param mixed $conditions the conditions
-	 * @return string
-	 * @access private
-	 * @author Johnathan Pulos
-	 * @todo Can we pull this out, since it is used in another datasource
-	 */
-	private function getToken($conditions) {
-		$translationRequestToken = '';
-		/**
-		 * determine the translation_request_token based on the conditions
-		 *
-		 * @author Johnathan Pulos
-		 */
-		if((is_string($conditions)) && (strpos($conditions, 'translation_request_token') !== false)) {
-			preg_match('/translation_request_token\s*=\s*\'?"?(\w+)\'?"?/', $conditions, $matches);
-			if((!empty($matches)) && (isset($matches[1]))) {
-				$translationRequestToken = $matches[1];
-			}
-		}else if((is_array($conditions)) && (array_key_exists('translation_request_token', $conditions))) {
-			$translationRequestToken = $conditions['translation_request_token'];
-		}
-		return $translationRequestToken;
 	}
 	
 }

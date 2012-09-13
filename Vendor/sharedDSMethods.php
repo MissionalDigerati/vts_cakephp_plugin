@@ -48,5 +48,31 @@ class sharedDSMethods {
 		}
 	}
 	
+	/**
+	 * Get the translation_request_token based on the supplied conditions
+	 *
+	 * @param mixed $conditions the conditions
+	 * @return string
+	 * @access public
+	 * @author Johnathan Pulos
+	 */
+	public function getToken($conditions) {
+		$translationRequestToken = '';
+		/**
+		 * determine the translation_request_token based on the conditions
+		 *
+		 * @author Johnathan Pulos
+		 */
+		if((is_string($conditions)) && (strpos($conditions, 'translation_request_token') !== false)) {
+			preg_match('/translation_request_token\s*=\s*\'?"?(\w+)\'?"?/', $conditions, $matches);
+			if((!empty($matches)) && (isset($matches[1]))) {
+				$translationRequestToken = $matches[1];
+			}
+		}else if((is_array($conditions)) && (array_key_exists('translation_request_token', $conditions))) {
+			$translationRequestToken = $conditions['translation_request_token'];
+		}
+		return $translationRequestToken;
+	}
+	
 }
 ?>
