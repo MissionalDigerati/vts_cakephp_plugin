@@ -27,6 +27,12 @@
  */
 App::uses('HttpSocket', 'Network/Http');
 /**
+ * Get the sharedDSMethods in Vendor directory of plugin.
+ *
+ * @author Johnathan Pulos
+ */
+App::import('Vendor', 'VideoTranslatorService.sharedDSMethods');
+/**
  * Get the curlUtility in Vendor directory of plugin.  We use this for passing the audio file
  *
  * @author Johnathan Pulos
@@ -77,8 +83,18 @@ class ClipSource extends DataSource {
 			'datetime' => array('name' => 'datetime', 'format' => 'Y-m-d H:i:s', 'formatter' => 'date'),
 			'boolean' => array('name' => 'tinyint', 'limit' => '1')
 		);
-		
+		/**
+		 * The cURL utility object
+		 *
+		 * @var object
+		 */
 		public $curlUtility;
+		/**
+		 * The sharedDSMethods object
+		 *
+		 * @var object
+		 */
+		public $sharedMethods;
 	
 	/**
 	 * Initialize the DataSource
@@ -91,6 +107,7 @@ class ClipSource extends DataSource {
 		parent::__construct($config);
 		$this->Http = new HttpSocket();
 		$this->curlUtility = new curlUtility();
+		$this->sharedMethods = new sharedDSMethods();
 	}
 	
 	/**
@@ -158,13 +175,14 @@ class ClipSource extends DataSource {
 		$limit = false;
 		if((isset($data['conditions'])) && (!empty($data['conditions']))) {
 			$translationRequestToken = $this->getToken($data['conditions']);
+			$id = $this->sharedMethods->getModelId($Model, $data['conditions']);
 			if($translationRequestToken == '') {
 				throw new CakeException("Please check your condition.  Unable to locate the translation request token.");
 			}
 			if (empty($data['limit'])) {
 				$url = $this->config['vtsUrl'] . "clips.json?translation_request_token=" . $translationRequestToken;
 			} else if($data['limit'] == 1){
-				$url = $this->config['vtsUrl'] . "clips/" . $Model->id . ".json?translation_request_token=" . $translationRequestToken;
+				$url = $this->config['vtsUrl'] . "clips/" . $id . ".json?translation_request_token=" . $translationRequestToken;
 			} else{
 				throw new CakeException("Can not retrieve a limit of records.");
 			}
@@ -277,7 +295,7 @@ class ClipSource extends DataSource {
 	 * @author Johnathan Pulos
 	 */
 	public function delete(Model $Model, $conditions = null) {
-		$id = $this->getModelId($Model, $conditions);
+		$id = $this->sharedMethods->getModelId($Model, $conditions);
 		if(!isset($Model->translation_request_token)) {
 			throw new CakeException("API requires a Clip.translation_request_token.");
 		}
@@ -296,26 +314,6 @@ class ClipSource extends DataSource {
 			return false;
 		}else {
 			return true;
-		}
-	}
-	
-	/**
-	 * Get the Model.id based on the passed conditions
-	 *
-	 * @param Model $Model The Model Object
-	 * @param array $conditions an array of conditions
-	 * @return integer
-	 * @access private
-	 * @author Johnathan Pulos
-	 * @todo Can we pull this out, since it is used in another datasource
-	 */
-	private function getModelId(Model $Model, $conditions) {
-		if(isset($conditions[$Model->alias . ".id"])) {
-			return $conditions[$Model->alias . ".id"];
-		}else if(isset($conditions["id"])) {
-			return $conditions["id"];
-		}else {
-			throw new CakeException("API requires a Clip.id.");
 		}
 	}
 	
